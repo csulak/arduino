@@ -1,0 +1,54 @@
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
+
+//LCD
+// Set the LCD address to 0x27 for a 16 chars and 2 line display
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+//MIC
+const int ledpin = 13; // ledpin and soundpin are not changed throughout the process
+const int soundpin = A0;
+const int threshold = 120; // sets threshold value for sound sensor
+
+//
+int aplauso=0;
+
+void setup()
+{
+  // initialize the LCD
+  lcd.begin();
+
+  //MIC
+  Serial.begin(9600);
+  pinMode(ledpin, OUTPUT);
+  pinMode(soundpin, INPUT);
+
+
+}
+
+void loop()
+{
+
+  
+  int soundsens = analogRead(soundpin); // reads analog data from sound sensor (MIC)
+  Serial.println(soundsens); // imprime en consola la lectura del MIC
+  if (soundsens >= threshold) {
+    digitalWrite(ledpin, LOW); //turns led on
+    
+    lcd.clear(); //limpia la pantalla LCD
+    
+    lcd.print("Valor del sensor:"); //imprime primer renglon del LCD
+    lcd.setCursor(0,1); //setea el cursor en el segundo renglon
+      lcd.print(soundsens); // imprime segundo renglon del LCD
+
+    aplauso=aplauso+1;
+    
+    delay(200);
+    
+  }
+  if (aplauso==2) {
+    digitalWrite(ledpin, HIGH); //apaga el led
+    aplauso=0;
+    
+  }
+}
